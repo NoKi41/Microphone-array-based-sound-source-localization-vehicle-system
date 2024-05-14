@@ -15,10 +15,7 @@ def get_array(array_type = 'circular' or 'linear', d_or_r = 0.1, num = 7, plot =
         if plot == True:
             plt.plot(array_x, array_y, 'o')
             for i in range(num):
-                plt.text(array_x[i], array_y[i], str(i), size=20)
-
-            # 画框比例1：1
-            plt.axis('equal')
+                plt.text(array[i,0], array[i,1], str(i))
             plt.show()
         return np.array([array_x, array_y]).T, (num-1)*d_or_r
     
@@ -37,13 +34,7 @@ def get_array(array_type = 'circular' or 'linear', d_or_r = 0.1, num = 7, plot =
             plt.plot(array[:,0], array[:,1], 'o')
             # 标注每个元素的索引
             for i in range(num):
-                plt.text(array[i,0], array[i,1], str(i), size=20)
-
-            # 画出圆
-            theta = np.linspace(0, 2*np.pi, 100)
-            plt.plot(d_or_r*np.cos(theta), d_or_r*np.sin(theta))
-            # 画框比例1：1
-            plt.axis('equal')
+                plt.text(array[i,0], array[i,1], str(i))
             plt.show()
 
         return array, 2*d_or_r
@@ -57,11 +48,9 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
     # 判断近场或远场情景
     signal_length = len(signal)
     lamda = c_speed / frecuncy_carry
-    print("波长：", lamda)
     distance_threshold = 2 * (mic_array_lamda_total**2) / lamda
     print("判定门限：", distance_threshold)
     source_distance = np.linalg.norm(source_location)
-    signal_amplitude = max(signal)
 
     receiver_signal = np.zeros([mic_array.shape[0], signal_length], dtype=np.float64)
         
@@ -81,7 +70,7 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
             receiver_signal[i] = np.pad(signal, (snaps_delay, 0), 'constant')[: signal_length]
             
             if AWGN:
-                receiver_signal[i] = receiver_signal[i] + np.random.normal(0, signal_amplitude*np.exp(-SNR_dB/20), signal.shape)
+                receiver_signal[i] = receiver_signal[i] + np.random.normal(0, np.exp(-SNR_dB/20), signal.shape)
             if plot:
                 plt.subplot(mic_array.shape[0],1,i+1)
                 plt.plot(receiver_signal[i])
@@ -90,7 +79,7 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
                 plt.axvline(x=snaps_delay, color='r', linestyle='--')
                 # 隐藏刻度
                 plt.xticks([])
-                plt.yticks([1, 0,- 1])
+                # plt.yticks([1, 0,- 1])
         
         if plot:
             plt.show()
@@ -117,7 +106,7 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
             receiver_signal[i] = np.pad(signal, (snaps_delay, 0), 'constant')[: signal_length]
 
             if AWGN:
-                receiver_signal[i] = receiver_signal[i] + np.random.normal(0, signal_amplitude*np.exp(-SNR_dB/20), signal.shape)
+                receiver_signal[i] = receiver_signal[i] + np.random.normal(0, np.exp(-SNR_dB/20), signal.shape)
             if plot:
                 plt.subplot(mic_array.shape[0],1,i+1)
                 plt.plot(receiver_signal[i])
@@ -126,7 +115,7 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
                 plt.axvline(x=snaps_delay, color='r', linestyle='--')
                 # 隐藏刻度
                 plt.xticks([])
-                # plt.yticks([1, 0,- 1])
+                plt.yticks([1, 0,- 1])
 
         if plot:    
             plt.show()
@@ -136,10 +125,10 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
 # 测试样例
 # region
     
-# mics, l_total =  get_array(array_type='circular', d_or_r=0.5, num=7, plot=True)
+# mics, l_total =  get_array(array_type='circular', d_or_r=0.1, num=7, plot=True)
 # print(mics)
 
-# SOURCE = np.array([1, np.sqrt(3)]) * 2
+# SOURCE = np.array([2, 2])
 # SIGNAL = np.sin(np.linspace(0, 20, 1024)*2*np.pi)
 
 # get_receiver_signal(source_location=SOURCE,
@@ -148,8 +137,8 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
 #                     signal=SIGNAL,
 #                     sampling_rate=44000,
 #                     c_speed=343,
-#                     frecuncy_carry=500,
-#                     AWGN=False,
+#                     frecuncy_carry=1,
+#                     AWGN=True,
 #                     SNR_dB=40,
 #                     plot=True)
 
