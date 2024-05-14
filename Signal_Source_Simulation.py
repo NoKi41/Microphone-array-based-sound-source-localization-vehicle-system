@@ -57,9 +57,9 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
     # 判断近场或远场情景
     signal_length = len(signal)
     lamda = c_speed / frecuncy_carry
-    print("波长：", lamda)
+    # print("波长：", lamda)
     distance_threshold = 2 * (mic_array_lamda_total**2) / lamda
-    print("判定门限：", distance_threshold)
+    # print("判定门限：", distance_threshold)
     source_distance = np.linalg.norm(source_location)
     signal_amplitude = max(signal)
 
@@ -69,7 +69,7 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
         plt.figure()
 
     if source_distance <= distance_threshold: # 近场模型下认为是球面波传播
-        print('近场模型')
+        # print('近场模型')
         for i in range(mic_array.shape[0]):
             # mic_array[i]到source_location的距离
             distance = np.linalg.norm(mic_array[i] - source_location)
@@ -98,7 +98,7 @@ def get_receiver_signal(source_location : np.ndarray, mic_array : np.ndarray, mi
         return receiver_signal
             
     else: # 远场模型下认为是平面波传播
-        print('远场模型')
+        # print('远场模型')
         vector_source_theta = source_location / np.linalg.norm(source_location)
         if np.arctan2(vector_source_theta[1], vector_source_theta[0]) * 180 / np.pi < 0:
             print('声源朝向：', 360 + np.arctan2(vector_source_theta[1], vector_source_theta[0]) * 180 / np.pi)
